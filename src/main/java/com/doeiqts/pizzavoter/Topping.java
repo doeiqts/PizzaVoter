@@ -1,0 +1,27 @@
+package com.doeiqts.pizzavoter;
+
+public enum Topping {
+    CHEESE,
+    PEPPERONI,
+    SAUSAGE,
+    BEEF,
+    PHILLY_STEAK,
+    HAM,
+    BACON,
+    CHICKEN,
+    CHEDDAR_CHEESE,
+    FETA_CHEESE,
+    PARMESAN_ASIAGO,
+    PROVOLONE_CHEESE,
+    BANANA_PEPPERS,
+    BLACK_OLIVES,
+    GREEN_OLIVES,
+    GREEN_PEPPERS,
+    JALAPENO_PEPPERS,
+    MUSHROOMS,
+    PINEAPPLE,
+    ONIONS,
+    RED_PEPPERS,
+    SPINACH,
+    DICED_TOMATOES
+}
