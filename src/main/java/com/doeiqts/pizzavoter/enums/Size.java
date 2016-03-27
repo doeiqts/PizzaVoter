@@ -1,4 +1,4 @@
-package com.doeiqts.pizzavoter;
+package com.doeiqts.pizzavoter.enums;
 
 public enum Size {
     SMALL(10),

@@ -1,7 +1,9 @@
-package com.doeiqts.pizzavoter;
+package com.doeiqts.pizzavoter.domain;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.doeiqts.pizzavoter.enums.Crust;
+import com.doeiqts.pizzavoter.enums.Sauce;
+import com.doeiqts.pizzavoter.enums.Size;
+import com.doeiqts.pizzavoter.enums.Topping;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -81,9 +83,18 @@ public class Pizza {
     }
 
     @Override
+    public int hashCode() {
+        int result = crust != null ? crust.hashCode() : 0;
+        result = 31 * result + (size != null ? size.hashCode() : 0);
+        result = 31 * result + (sauce != null ? sauce.hashCode() : 0);
+        result = 31 * result + (rightToppings != null ? rightToppings.hashCode() : 0);
+        result = 31 * result + (leftToppings != null ? leftToppings.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         ObjectMapper objectMapper = new ObjectMapper();
-        //objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         try {
             return objectMapper.writeValueAsString(this);
