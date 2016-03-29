@@ -10,14 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.EnumSet;
 
 public class Pizza {
-    private Crust crust;
     private Size size;
+    private Crust crust;
     private Sauce sauce;
 
     private EnumSet<Topping> rightToppings = EnumSet.of(Topping.CHEESE);
     private EnumSet<Topping> leftToppings = EnumSet.of(Topping.CHEESE);
 
-    public Pizza(Crust crust, Size size, Sauce sauce) {
+    public Pizza(Size size, Crust crust, Sauce sauce) {
         this.crust = crust;
         this.size = size;
         this.sauce = sauce;
@@ -47,12 +47,12 @@ public class Pizza {
         return (rightToppingsCount + leftToppingsCount) / 2;
     }
 
-    public Crust getCrust() {
-        return crust;
-    }
-
     public Size getSize() {
         return size;
+    }
+
+    public Crust getCrust() {
+        return crust;
     }
 
     public Sauce getSauce() {

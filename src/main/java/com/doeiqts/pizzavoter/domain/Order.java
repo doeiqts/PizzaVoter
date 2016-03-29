@@ -24,6 +24,16 @@ public class Order {
         }
     }
 
+    public void removePizza(Pizza pizza) {
+        Integer voteCount = pizzas.get(pizza);
+
+        if (voteCount == 1) {
+            pizzas.remove(pizza);
+        } else if (voteCount > 1) {
+            pizzas.put(pizza, voteCount - 1);
+        }
+    }
+
     public int size() {
         return pizzas.size();
     }

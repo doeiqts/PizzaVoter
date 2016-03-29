@@ -22,34 +22,79 @@
 </head>
 <body>
 
-    <p><b>Hello ${name}, submit the pizzas you want to vote for:</b></p>
-    <br>
+    <p><b>Hello ${name}, submit the pizzas you want to vote for</b></p>
+
+    <p><b>Current pizzas being voted on:</b>
+        <c:forEach var="pizza" items="${pizzas}">
+            <p>
+                Votes: ${pizza.value}<br>
+                Size: ${pizza.key.size}<br>
+                Crust: ${pizza.key.crust}<br>
+                Sauce: ${pizza.key.sauce}<br>
+                Toppings (right side): ${pizza.key.rightToppings}<br>
+                Toppings (left side): ${pizza.key.leftToppings}<br>
+            </p>
+        </c:forEach>
+
+        <c:if test="${empty pizzas}">
+            <p>
+                No pizzas have been voted on yet.
+            </p>
+        </c:if>
+    </p>
 
     <form action="/" method="post">
-        Size: <select name="size">
-              <c:forEach var="size" items="${sizes}">
-                <option value="${size}">${size}</option>
-              </c:forEach>
-              </select>
-              <br>
-        Crust:
+    <c:forEach begin="0" end="3" varStatus="pizza">
         <p>
-            <input type="submit" value="Vote for these pizzas">
+            Size:   <select name="size${pizza.count}">
+                        <option value=""></option>
+                    <c:forEach var="size" items="${sizes}">
+                        <option value="${size}">${size}</option>
+                    </c:forEach>
+                    </select>
+                    <br>
+
+            Crust:  <select name="crust${pizza.count}">
+                        <option value=""></option>
+                    <c:forEach var="crust" items="${crusts}">
+                        <option value="${crust}">${crust}</option>
+                    </c:forEach>
+                    </select>
+                    <br>
+
+            Sauce:  <select name="sauce${pizza.count}">
+                        <option value=""></option>
+                    <c:forEach var="sauce" items="${sauces}">
+                        <option value="${sauce}">${sauce}</option>
+                    </c:forEach>
+                    </select>
+                    <br>
+
+            <c:forEach begin="0" end="3" varStatus="topping">
+            Right Topping:  <select name="rightToppings${pizza.count}">
+                               <option value=""></option>
+                            <c:forEach var="topping" items="${toppings}">
+                               <option value="${topping}">${topping}</option>
+                            </c:forEach>
+                            </select>
+                            <br>
+            </c:forEach>
+
+            <c:forEach begin="0" end="3" varStatus="topping">
+            Left Topping:   <select name="leftToppings${pizza.count}">
+                                <option value=""></option>
+                            <c:forEach var="topping" items="${toppings}">
+                                <option value="${topping}">${topping}</option>
+                            </c:forEach>
+                            </select>
+                            <br>
+            </c:forEach>
+        </p>
+    </c:forEach>
+        <p>
+            <input type="submit" value="Vote for these pizzas!">
         </p>
     </form>
     <br>
-
-    <b>Current pizzas being voted on:</b>
-    <c:forEach var="pizza" items="${pizzas}">
-        <p>
-            Votes: ${pizza.value}<br>
-            Size: ${pizza.key.size}<br>
-            Crust: ${pizza.key.crust}<br>
-            Sauce: ${pizza.key.sauce}<br>
-            Toppings (right side): ${pizza.key.rightToppings}<br>
-            Toppings (left side): ${pizza.key.leftToppings}<br>
-        </p>
-    </c:forEach>
-
 </body>
 </html>
