@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,13 +32,7 @@ public class PizzaVoterServlet extends HttpServlet {
         User currentUser = userService.getCurrentUser();
 
         if (currentUser != null) {
-            request.setAttribute("name", currentUser.getNickname());
-            request.setAttribute("sizes", Size.values());
-            request.setAttribute("crusts", Crust.values());
-            request.setAttribute("sauces", Sauce.values());
-            request.setAttribute("toppings", Topping.values());
-
-            request.setAttribute("pizzas", currentOrder.getPizzas());
+            setCommonRequestVariables(request, currentUser);
 
             try{
               request.getRequestDispatcher("/pizzavoter.jsp").forward(request, response);
@@ -54,11 +50,7 @@ public class PizzaVoterServlet extends HttpServlet {
         User currentUser = userService.getCurrentUser();
 
         if (currentUser != null) {
-            request.setAttribute("name", currentUser.getNickname());
-            request.setAttribute("sizes", Size.values());
-            request.setAttribute("crusts", Crust.values());
-            request.setAttribute("sauces", Sauce.values());
-            request.setAttribute("toppings", Topping.values());
+            setCommonRequestVariables(request, currentUser);
 
             Set<Pizza> pizzaSet = new HashSet<>();
 
@@ -93,14 +85,16 @@ public class PizzaVoterServlet extends HttpServlet {
             }
 
             // Save the users new votes.
-            individualOrders.put(currentUser.getNickname(), pizzaSet);
+            if (pizzaSet.isEmpty()) {
+                individualOrders.remove(currentUser.getNickname());
+            } else {
+                individualOrders.put(currentUser.getNickname(), pizzaSet);
+            }
 
             // Add the votes to the current order.
             for (Pizza pizza : pizzaSet) {
                 currentOrder.addPizza(pizza);
             }
-
-            request.setAttribute("pizzas", currentOrder.getPizzas());
 
             try{
                 request.getRequestDispatcher("/pizzavoter.jsp").forward(request, response);
@@ -112,9 +106,27 @@ public class PizzaVoterServlet extends HttpServlet {
         }
     }
 
+    private void setCommonRequestVariables(HttpServletRequest request, User currentUser) {
+        request.setAttribute("name", currentUser.getNickname());
+        request.setAttribute("crusts", Crust.values());
+        request.setAttribute("sauces", Sauce.values());
+
+        // Since cheese is defaulted, don't let it be a choice for the toppings.
+        EnumSet<Topping> toppings = EnumSet.allOf(Topping.class);
+        toppings.remove(Topping.CHEESE);
+
+        request.setAttribute("toppings", toppings);
+        request.setAttribute("pizzas", currentOrder.getPizzas());
+
+        Set<String> voters = individualOrders.keySet();
+
+        request.setAttribute("voters", voters);
+    }
+
     private Pizza serializePizza(HttpServletRequest request, String pizzaNumber) {
         try {
-            Pizza pizza = new Pizza(Size.valueOf(request.getParameter("size" + pizzaNumber)),
+            // Hardcoding the size for now. Focusing on the pizza itself.
+            Pizza pizza = new Pizza(Size.MEDIUM,
                     Crust.valueOf(request.getParameter("crust" + pizzaNumber)),
                     Sauce.valueOf(request.getParameter("sauce" + pizzaNumber)));
 
