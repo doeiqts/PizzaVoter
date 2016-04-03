@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <!DOCTYPE HTML>
 <html lang="en-US">
@@ -54,39 +55,49 @@
                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
                         <legend>Pizza ${pizza.count}</legend>
                         <p>
-                            Crust:  <select class="form-control" name="crust${pizza.count}">
+                            Crust:  <select class="form-control" id="crust${pizza.count}" name="crust${pizza.count}">
                                         <option value=""></option>
                                     <c:forEach var="crust" items="${crusts}">
-                                        <option value="${crust}">${crust}</option>
+                                        <option value="${crust}" ${fn:length(userPizzas) >= pizza.count && userPizzas[pizza.index].crust == crust ? "selected" : ""}>${crust}</option>
                                     </c:forEach>
                                     </select>
                                     <br>
 
-                            Sauce:  <select class="form-control" name="sauce${pizza.count}">
+                            Sauce:  <select class="form-control" id="sauce${pizza.count}" name="sauce${pizza.count}">
                                         <option value=""></option>
                                     <c:forEach var="sauce" items="${sauces}">
-                                        <option value="${sauce}">${sauce}</option>
+                                        <option value="${sauce}" ${fn:length(userPizzas) >= pizza.count && userPizzas[pizza.index].sauce == sauce ? "selected" : ""}>${sauce}</option>
                                     </c:forEach>
                                     </select>
                                     <br>
 
                             Right Toppings:
-                            <c:forEach begin="0" end="1" varStatus="topping">
-                                <select class="form-control" name="rightToppings${pizza.count}">
-                                   <option value=""></option>
+                            <c:forEach begin="0" end="1" varStatus="toppingLoop">
+                                <select class="form-control" id="rightToppings${pizza.count}-${toppingLoop.count}" name="rightToppings${pizza.count}">
+                                    <option value=""></option>
                                 <c:forEach var="topping" items="${toppings}">
-                                   <option value="${topping}">${topping}</option>
+                                    <option value="${topping}" ${fn:length(userPizzas) >= pizza.count
+                                                                && fn:length(userPizzas[pizza.index].rightToppingsList) > toppingLoop.count
+                                                                && userPizzas[pizza.index].rightToppingsList[toppingLoop.count] == topping
+                                                                ? "selected" : ""}>
+                                        ${topping}
+                                    </option>
                                 </c:forEach>
                                 </select>
                             </c:forEach>
                             <br>
 
                             Left Toppings:
-                            <c:forEach begin="0" end="1" varStatus="topping">
-                                <select class="form-control" name="leftToppings${pizza.count}">
+                            <c:forEach begin="0" end="1" varStatus="toppingLoop">
+                                <select class="form-control" id="leftToppings${pizza.count}-${toppingLoop.count}" name="leftToppings${pizza.count}">
                                     <option value=""></option>
                                 <c:forEach var="topping" items="${toppings}">
-                                    <option value="${topping}">${topping}</option>
+                                    <option value="${topping}" ${fn:length(userPizzas) >= pizza.count
+                                                                && fn:length(userPizzas[pizza.index].leftToppingsList) > toppingLoop.count
+                                                                && userPizzas[pizza.index].leftToppingsList[toppingLoop.count] == topping
+                                                                ? "selected" : ""}>
+                                        ${topping}
+                                    </option>
                                 </c:forEach>
                                 </select>
                             </c:forEach>

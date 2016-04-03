@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,9 +36,9 @@ public class PizzaVoterServlet extends HttpServlet {
             setCommonRequestVariables(request, currentUser);
 
             try{
-              request.getRequestDispatcher("/pizzavoter.jsp").forward(request, response);
+                request.getRequestDispatcher("/pizzavoter.jsp").forward(request, response);
             } catch (ServletException e) {
-              response.getWriter().println(e);
+                response.getWriter().println(e);
             }
         } else {
             response.sendRedirect(userService.createLoginURL(request.getRequestURI()));
@@ -50,8 +51,6 @@ public class PizzaVoterServlet extends HttpServlet {
         User currentUser = userService.getCurrentUser();
 
         if (currentUser != null) {
-            setCommonRequestVariables(request, currentUser);
-
             Set<Pizza> pizzaSet = new HashSet<>();
 
             // Get the user inputted pizzas
@@ -96,6 +95,8 @@ public class PizzaVoterServlet extends HttpServlet {
                 currentOrder.addPizza(pizza);
             }
 
+            setCommonRequestVariables(request, currentUser);
+
             try{
                 request.getRequestDispatcher("/pizzavoter.jsp").forward(request, response);
             } catch (ServletException e) {
@@ -114,13 +115,16 @@ public class PizzaVoterServlet extends HttpServlet {
         // Since cheese is defaulted, don't let it be a choice for the toppings.
         EnumSet<Topping> toppings = EnumSet.allOf(Topping.class);
         toppings.remove(Topping.CHEESE);
-
         request.setAttribute("toppings", toppings);
+
         request.setAttribute("pizzas", currentOrder.getPizzas());
+        request.setAttribute("voters", individualOrders.keySet());
 
-        Set<String> voters = individualOrders.keySet();
-
-        request.setAttribute("voters", voters);
+        List<Pizza> userPizzas = null;
+        if (individualOrders.get(currentUser.getNickname()) != null) {
+            userPizzas = new ArrayList<>(individualOrders.get(currentUser.getNickname()));
+        }
+        request.setAttribute("userPizzas", userPizzas);
     }
 
     private Pizza serializePizza(HttpServletRequest request, String pizzaNumber) {

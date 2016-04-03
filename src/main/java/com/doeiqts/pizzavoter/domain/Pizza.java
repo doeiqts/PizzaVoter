@@ -7,7 +7,9 @@ import com.doeiqts.pizzavoter.enums.Topping;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 public class Pizza {
     private Size size;
@@ -16,6 +18,9 @@ public class Pizza {
 
     private EnumSet<Topping> rightToppings = EnumSet.of(Topping.CHEESE);
     private EnumSet<Topping> leftToppings = EnumSet.of(Topping.CHEESE);
+
+    private List<Topping> rightToppingsList;
+    private List<Topping> leftToppingsList;
 
     public Pizza(Size size, Crust crust, Sauce sauce) {
         this.crust = crust;
@@ -63,8 +68,24 @@ public class Pizza {
         return rightToppings;
     }
 
+    public List<Topping> getRightToppingsList() {
+        if (rightToppings == null) {
+            return null;
+        } else {
+            return new ArrayList<>(rightToppings);
+        }
+    }
+
     public EnumSet<Topping> getLeftToppings() {
         return leftToppings;
+    }
+
+    public List<Topping> getLeftToppingsList() {
+        if (leftToppings == null) {
+            return null;
+        } else {
+            return new ArrayList<>(leftToppings);
+        }
     }
 
     @Override
