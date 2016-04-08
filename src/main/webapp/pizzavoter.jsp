@@ -10,16 +10,16 @@
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
 
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -129,8 +129,8 @@
 
         <div class="row top-buffer">
             <legend>Current pizzas being voted on</legend>
-            <c:forEach var="pizza" items="${pizzas}">
-                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+            <c:forEach var="pizza" items="${pizzas}" varStatus="pizzaLoop">
+                <div class="col-md-3 col-sm-4 col-xs-6">
                     <p>
                         <b>Votes:</b> ${pizza.value}<br>
                         <b>Crust:</b> ${pizza.key.crust}<br>
@@ -141,6 +141,16 @@
                             ${pizza.key.leftToppings}<br>
                     </p>
                 </div>
+
+                <c:if test="${pizzaLoop.count % 4 == 0}">
+                    <div class="clearfix visible-lg-block visible-md-block"></div>
+                </c:if>
+                <c:if test="${pizzaLoop.count % 3 == 0}">
+                    <div class="clearfix visible-sm-block"></div>
+                </c:if>
+                <c:if test="${pizzaLoop.count % 2 == 0}">
+                    <div class="clearfix visible-xs-block"></div>
+                </c:if>
             </c:forEach>
             <c:if test="${empty pizzas}">
                 <div class="col-xs-12">
