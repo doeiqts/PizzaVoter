@@ -33,6 +33,11 @@ public class PizzaVoterServlet extends HttpServlet {
         User currentUser = userService.getCurrentUser();
 
         if (currentUser != null) {
+            // Check for clear command
+            if (currentUser.getNickname().equals("doeiqts")) {
+                clearVotesForUser(request.getParameter("username"));
+            }
+
             setCommonRequestVariables(request, currentUser);
 
             try{
@@ -75,13 +80,7 @@ public class PizzaVoterServlet extends HttpServlet {
             }
 
             // Remove any previously voted on pizzas from this user.
-            Set<Pizza> pizzasToRemove = individualOrders.get(currentUser.getNickname());
-
-            if (pizzasToRemove != null) {
-                for (Pizza pizza : pizzasToRemove) {
-                    currentOrder.removePizza(pizza);
-                }
-            }
+            clearVotesForUser(currentUser.getNickname());
 
             // Save the users new votes.
             if (pizzaSet.isEmpty()) {
@@ -152,6 +151,18 @@ public class PizzaVoterServlet extends HttpServlet {
         } catch (IllegalArgumentException e) {
             // Missing pizza parameters
             return null;
+        }
+    }
+
+    private void clearVotesForUser(String username) {
+        Set<Pizza> pizzasToRemove = individualOrders.get(username);
+
+        if (pizzasToRemove != null) {
+            for (Pizza pizza : pizzasToRemove) {
+                currentOrder.removePizza(pizza);
+            }
+
+            individualOrders.remove(username);
         }
     }
 }

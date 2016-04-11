@@ -6,7 +6,7 @@
 <head>
 	<meta charset="UTF-8">
 
-	<!-- PokePrices style -->
+	<!-- PizzaVoter style -->
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
 
     <!-- Latest compiled and minified CSS -->
@@ -115,7 +115,11 @@
             <legend>Current voters</legend>
             <div class="col-xs-12">
                 <c:forEach var="voter" items="${voters}">
-                    ${voter}<br>
+                    ${voter}
+                    <c:if test="${name == 'doeiqts'}">
+                         <a href="/clear?username=${voter}">[X]</a>
+                    </c:if>
+                    <br>
                 </c:forEach>
             </div>
             <c:if test="${empty voters}">
