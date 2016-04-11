@@ -32,7 +32,39 @@
             $("#leftToppings" + pizzaNumber + "-1")[0].selectedIndex = 0;
             $("#leftToppings" + pizzaNumber + "-2")[0].selectedIndex = 0;
         }
+
+        function setMyPizzaVote(pizzaNumber, crust, sauce, rightTopping1, rightTopping2, leftTopping1, leftTopping2) {
+            $("#crust" + pizzaNumber).val(crust);
+            $("#sauce" + pizzaNumber).val(sauce);
+            $("#rightToppings" + pizzaNumber + "-1").val(rightTopping1);
+            $("#rightToppings" + pizzaNumber + "-2").val(rightTopping2);
+            $("#leftToppings" + pizzaNumber + "-1").val(leftTopping1);
+            $("#leftToppings" + pizzaNumber + "-2").val(leftTopping2);
+        }
     </script>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            <c:forEach var="pizza" items="${pizzas}" varStatus="pizzaLoop">
+                document.getElementById("votedPizza${pizzaLoop.count}").onclick = function() {
+                    if ($("#crust1")[0].selectedIndex == 0) {
+                        setMyPizzaVote(1, "${pizza.key.crust}", "${pizza.key.sauce}", ${fn:length(pizza.key.rightToppingsList) > 1 ? "${pizza.key.rightToppingsList[1]}" : "''"}, ${fn:length(pizza.key.rightToppingsList) > 2 ? "${pizza.key.rightToppingsList[2]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 1 ? "${pizza.key.leftToppingsList[1]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 2 ? "${pizza.key.leftToppingsList[2]}" : "''"});
+                    } else if ($("#crust2")[0].selectedIndex == 0) {
+                        setMyPizzaVote(2, "${pizza.key.crust}", "${pizza.key.sauce}", ${fn:length(pizza.key.rightToppingsList) > 1 ? "${pizza.key.rightToppingsList[1]}" : "''"}, ${fn:length(pizza.key.rightToppingsList) > 2 ? "${pizza.key.rightToppingsList[2]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 1 ? "${pizza.key.leftToppingsList[1]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 2 ? "${pizza.key.leftToppingsList[2]}" : "''"});
+                    } else if ($("#crust3")[0].selectedIndex == 0) {
+                        setMyPizzaVote(3, "${pizza.key.crust}", "${pizza.key.sauce}", ${fn:length(pizza.key.rightToppingsList) > 1 ? "${pizza.key.rightToppingsList[1]}" : "''"}, ${fn:length(pizza.key.rightToppingsList) > 2 ? "${pizza.key.rightToppingsList[2]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 1 ? "${pizza.key.leftToppingsList[1]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 2 ? "${pizza.key.leftToppingsList[2]}" : "''"});
+                    } else if ($("#crust4")[0].selectedIndex == 0) {
+                        setMyPizzaVote(4, "${pizza.key.crust}", "${pizza.key.sauce}", ${fn:length(pizza.key.rightToppingsList) > 1 ? "${pizza.key.rightToppingsList[1]}" : "''"}, ${fn:length(pizza.key.rightToppingsList) > 2 ? "${pizza.key.rightToppingsList[2]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 1 ? "${pizza.key.leftToppingsList[1]}" : "''"}, ${fn:length(pizza.key.leftToppingsList) > 2 ? "${pizza.key.leftToppingsList[2]}" : "''"});
+                    } else {
+                        alert("All your pizza votes are being used. Clear a vote to be able to copy another.");
+                    }
+
+                    return false;
+                }
+            </c:forEach>
+        }
+    </script>
+
 
 </head>
 <body>
@@ -153,7 +185,7 @@
             <c:forEach var="pizza" items="${pizzas}" varStatus="pizzaLoop">
                 <div class="col-md-3 col-sm-4 col-xs-6">
                     <p>
-                        <b>Votes:</b> ${pizza.value}<br>
+                        <b>Votes:</b> ${pizza.value} <a id="votedPizza${pizzaLoop.count}" href="#">Copy</a><br>
                         <b>Crust:</b> ${pizza.key.crust}<br>
                         <b>Sauce:</b> ${pizza.key.sauce}<br>
                         <b>Toppings (right side):</b><br>
