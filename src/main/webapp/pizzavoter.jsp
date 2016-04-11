@@ -23,6 +23,17 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <script type="text/javascript">
+        function clearMyPizzaVote(pizzaNumber) {
+            $("#crust" + pizzaNumber)[0].selectedIndex = 0;
+            $("#sauce" + pizzaNumber)[0].selectedIndex = 0;
+            $("#rightToppings" + pizzaNumber + "-1")[0].selectedIndex = 0;
+            $("#rightToppings" + pizzaNumber + "-2")[0].selectedIndex = 0;
+            $("#leftToppings" + pizzaNumber + "-1")[0].selectedIndex = 0;
+            $("#leftToppings" + pizzaNumber + "-2")[0].selectedIndex = 0;
+        }
+    </script>
+
 </head>
 <body>
 
@@ -49,8 +60,8 @@
     </div>
 
     <div class="container">
-        <div class="row">
-            <form role="form" name="vote" method="post" action="/">
+        <form role="form" name="vote" method="post" action="/">
+            <div class="row">
                 <c:forEach begin="0" end="3" varStatus="pizza">
                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
                         <legend>Pizza ${pizza.count}</legend>
@@ -102,14 +113,20 @@
                                 </select>
                             </c:forEach>
                             <br>
+                            <button type="button" class="btn btn-default" alt="clear pizza" onclick="clearMyPizzaVote(${pizza.count})">Clear Pizza</button>
+                            <br>
                         </p>
                     </div>
                 </c:forEach>
-
-                <button type="submit" class="btn btn-default" alt="vote">Vote</button>
-
-            </form>
-        </div>
+            </div>
+            <div class="row top-buffer">
+                <div class="col-xs-12">
+                    <p>
+                        <button type="submit" class="btn btn-default" alt="vote">Vote</button>
+                    </p>
+                </div>
+            </div>
+        </form>
 
         <div class="row top-buffer">
             <legend>Current voters</legend>
