@@ -3,34 +3,34 @@ package com.doeiqts.pizzavoter.domain;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Order {
-    private Map<Pizza, Integer> pizzas = new HashMap<>();
+    private Map<Pizza, Vote> pizzas = new LinkedHashMap<>();
 
-    public Map<Pizza, Integer> getPizzas() {
+    public Map<Pizza, Vote> getPizzas() {
         return pizzas;
     }
 
-    public void addPizza(Pizza pizza) {
-        Integer voteCount = pizzas.get(pizza);
-
-        if (voteCount == null) {
-            pizzas.put(pizza, 1);
+    public void addPizza(Pizza pizza, String username) {
+        Vote vote = pizzas.get(pizza);
+        if (vote == null) {
+            pizzas.put(pizza, new Vote(username));
         } else {
-            pizzas.put(pizza, voteCount + 1);
+            pizzas.put(pizza, vote.addToVote(username));
         }
     }
 
-    public void removePizza(Pizza pizza) {
-        Integer voteCount = pizzas.get(pizza);
+    public void removePizza(Pizza pizza, String username) {
+        Vote vote = pizzas.get(pizza);
 
-        if (voteCount == 1) {
-            pizzas.remove(pizza);
-        } else if (voteCount > 1) {
-            pizzas.put(pizza, voteCount - 1);
+        if(null != vote) {
+            if (vote.getCount() == 1) {
+                pizzas.remove(pizza);
+            } else if (vote.getCount() > 1) {
+                pizzas.put(pizza, vote.removeVote(username));
+            }
         }
     }
 

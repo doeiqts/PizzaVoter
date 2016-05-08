@@ -1,55 +1,45 @@
 package com.doeiqts.pizzavoter.domain;
 
-import com.doeiqts.pizzavoter.enums.Crust;
-import com.doeiqts.pizzavoter.enums.Sauce;
-import com.doeiqts.pizzavoter.enums.Size;
-import com.doeiqts.pizzavoter.enums.Topping;
+import com.doeiqts.pizzavoter.enums.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 public class Pizza {
     private Size size;
     private Crust crust;
     private Sauce sauce;
+    private String createdByUser;
 
-    private EnumSet<Topping> rightToppings = EnumSet.of(Topping.CHEESE);
-    private EnumSet<Topping> leftToppings = EnumSet.of(Topping.CHEESE);
+    private Map<Topping, Position> toppings = new TreeMap<>();
 
-    private List<Topping> rightToppingsList;
-    private List<Topping> leftToppingsList;
 
     public Pizza(Size size, Crust crust, Sauce sauce) {
         this.crust = crust;
         this.size = size;
         this.sauce = sauce;
+        toppings.put(Topping.CHEESE, Position.ALL);
     }
 
-    public void addRightTopping(Topping topping) {
-        this.rightToppings.add(topping);
+    public Pizza(Size size, Crust crust, Sauce sauce, String createdByUser) {
+        this.crust = crust;
+        this.size = size;
+        this.sauce = sauce;
+        this.createdByUser = createdByUser;
+        toppings.put(Topping.CHEESE, Position.ALL);
     }
 
-    public void addLeftTopping(Topping topping) {
-        this.leftToppings.add(topping);
-    }
-
-    public void addTopping(Topping topping) {
-        addRightTopping(topping);
-        addLeftTopping(topping);
+    public void addTopping(Topping topping, Position position) {
+        this.toppings.put(topping,position);
     }
 
     public double countToppings() {
-        // Total toppings on the right side minus the default cheese.
-        double rightToppingsCount = rightToppings.size() - 1;
-
-        // Total topping on the left side minus the default cheese.
-        double leftToppingsCount = leftToppings.size() - 1;
-
-        // Each side only counts as half a topping, so cut the total count in half.
-        return (rightToppingsCount + leftToppingsCount) / 2;
+        double toppingCount = 0;
+        for(Map.Entry<Topping,Position> set   : toppings.entrySet()) {
+            toppingCount += (set.getValue().equals(Position.ALL)) ? 1 : 0.5;
+        }
+        return toppingCount;
     }
 
     public Size getSize() {
@@ -64,28 +54,26 @@ public class Pizza {
         return sauce;
     }
 
-    public EnumSet<Topping> getRightToppings() {
-        return rightToppings;
+    public Map<Topping, Position> getToppings() {
+        return toppings;
     }
 
-    public List<Topping> getRightToppingsList() {
-        if (rightToppings == null) {
-            return null;
-        } else {
-            return new ArrayList<>(rightToppings);
+    public String getToppingsJson() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            return objectMapper.writeValueAsString(toppings);
+        } catch (JsonProcessingException e) {
+            return "";
         }
     }
 
-    public EnumSet<Topping> getLeftToppings() {
-        return leftToppings;
+    public List<Topping> getToppingList() {
+        return new ArrayList<>(toppings.keySet());
     }
 
-    public List<Topping> getLeftToppingsList() {
-        if (leftToppings == null) {
-            return null;
-        } else {
-            return new ArrayList<>(leftToppings);
-        }
+    public List<Position> getPositionList() {
+        return new ArrayList<>(toppings.values());
     }
 
     @Override
@@ -95,21 +83,19 @@ public class Pizza {
 
         Pizza pizza = (Pizza) o;
 
-        if (crust != pizza.crust) return false;
         if (size != pizza.size) return false;
+        if (crust != pizza.crust) return false;
         if (sauce != pizza.sauce) return false;
-        if (!rightToppings.equals(pizza.rightToppings)) return false;
-        return leftToppings.equals(pizza.leftToppings);
+        return toppings != null ? toppings.equals(pizza.toppings) : pizza.toppings == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = crust != null ? crust.hashCode() : 0;
-        result = 31 * result + (size != null ? size.hashCode() : 0);
+        int result = size != null ? size.hashCode() : 0;
+        result = 31 * result + (crust != null ? crust.hashCode() : 0);
         result = 31 * result + (sauce != null ? sauce.hashCode() : 0);
-        result = 31 * result + (rightToppings != null ? rightToppings.hashCode() : 0);
-        result = 31 * result + (leftToppings != null ? leftToppings.hashCode() : 0);
+        result = 31 * result + (toppings != null ? toppings.hashCode() : 0);
         return result;
     }
 

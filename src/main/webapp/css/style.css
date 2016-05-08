@@ -5,3 +5,23 @@ body {
 .top-buffer {
     margin-top:20px;
 }
+
+.pizza-header {
+    font-size: 20px !important;
+}
+
+.glyphicon.glyphicon-remove.pull-right.text-danger {
+    padding-top: 2px !important;
+}
+
+.fa {
+    margin-top: 10px;
+}
+
+.truncate {
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  float: left;
+}

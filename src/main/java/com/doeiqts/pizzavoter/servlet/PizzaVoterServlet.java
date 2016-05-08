@@ -2,10 +2,9 @@ package com.doeiqts.pizzavoter.servlet;
 
 import com.doeiqts.pizzavoter.domain.Order;
 import com.doeiqts.pizzavoter.domain.Pizza;
-import com.doeiqts.pizzavoter.enums.Crust;
-import com.doeiqts.pizzavoter.enums.Sauce;
-import com.doeiqts.pizzavoter.enums.Size;
-import com.doeiqts.pizzavoter.enums.Topping;
+import com.doeiqts.pizzavoter.enums.*;
+import com.doeiqts.pizzavoter.util.MapUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -15,17 +14,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PizzaVoterServlet extends HttpServlet {
     private Order currentOrder = new Order();
     private Map<String, Set<Pizza>> individualOrders = new HashMap<>();
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -34,7 +28,7 @@ public class PizzaVoterServlet extends HttpServlet {
 
         if (currentUser != null) {
             // Check for clear command
-            if (currentUser.getNickname().equals("doeiqts")) {
+            if ("doeiqts".equals(currentUser.getNickname())) {
                 clearVotesForUser(request.getParameter("username"));
             }
 
@@ -56,7 +50,7 @@ public class PizzaVoterServlet extends HttpServlet {
         User currentUser = userService.getCurrentUser();
 
         if (currentUser != null) {
-            Set<Pizza> pizzaSet = new HashSet<>();
+            Set<Pizza> pizzaSet = new LinkedHashSet<>();
 
             // Get the user inputted pizzas
             Pizza pizza1 = serializePizza(request, "1");
@@ -91,7 +85,7 @@ public class PizzaVoterServlet extends HttpServlet {
 
             // Add the votes to the current order.
             for (Pizza pizza : pizzaSet) {
-                currentOrder.addPizza(pizza);
+                currentOrder.addPizza(pizza, currentUser.getNickname());
             }
 
             setCommonRequestVariables(request, currentUser);
@@ -115,14 +109,14 @@ public class PizzaVoterServlet extends HttpServlet {
         EnumSet<Topping> toppings = EnumSet.allOf(Topping.class);
         toppings.remove(Topping.CHEESE);
         request.setAttribute("toppings", toppings);
-
-        request.setAttribute("pizzas", currentOrder.getPizzas());
+        request.setAttribute("pizzas", MapUtil.sortByValue(currentOrder.getPizzas(), true));
         request.setAttribute("voters", individualOrders.keySet());
 
         List<Pizza> userPizzas = null;
         if (individualOrders.get(currentUser.getNickname()) != null) {
             userPizzas = new ArrayList<>(individualOrders.get(currentUser.getNickname()));
         }
+
         request.setAttribute("userPizzas", userPizzas);
     }
 
@@ -133,20 +127,13 @@ public class PizzaVoterServlet extends HttpServlet {
                     Crust.valueOf(request.getParameter("crust" + pizzaNumber)),
                     Sauce.valueOf(request.getParameter("sauce" + pizzaNumber)));
 
-            String[] rightToppings = request.getParameterValues("rightToppings" + pizzaNumber);
-            for (String topping : rightToppings) {
-                if (topping != "") {
-                    pizza.addRightTopping(Topping.valueOf(topping));
+            String[] toppings = request.getParameterValues("toppings" + pizzaNumber);
+            String[] positions = request.getParameterValues("position" + pizzaNumber);
+            for (int i = 0; i < toppings.length; i++) {
+                if (toppings[i] != "") {
+                    pizza.addTopping(Topping.valueOf(toppings[i]),Position.valueOf(positions[i]));
                 }
             }
-
-            String[] leftToppings = request.getParameterValues("leftToppings" + pizzaNumber);
-            for (String topping : leftToppings) {
-                if (topping != "") {
-                    pizza.addLeftTopping(Topping.valueOf(topping));
-                }
-            }
-
             return pizza;
         } catch (IllegalArgumentException e) {
             // Missing pizza parameters
@@ -159,7 +146,7 @@ public class PizzaVoterServlet extends HttpServlet {
 
         if (pizzasToRemove != null) {
             for (Pizza pizza : pizzasToRemove) {
-                currentOrder.removePizza(pizza);
+                currentOrder.removePizza(pizza, username);
             }
 
             individualOrders.remove(username);
