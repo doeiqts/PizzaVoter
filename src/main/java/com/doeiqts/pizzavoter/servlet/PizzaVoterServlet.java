@@ -143,7 +143,7 @@ public class PizzaVoterServlet extends HttpServlet {
                 if (toppings[i] != "") {
                     Position newPosition = Position.valueOf(positions[i]);
                     Position old = pizza.addTopping(Topping.valueOf(toppings[i]),newPosition);
-                    if((Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
+                    if(Position.ALL.equals(old) || (Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
                         (Position.LEFT.equals(old) && newPosition.equals(Position.RIGHT))) {
                         pizza.addTopping(Topping.valueOf(toppings[i]), Position.ALL);
                     }
