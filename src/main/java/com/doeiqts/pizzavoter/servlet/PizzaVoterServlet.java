@@ -2,7 +2,11 @@ package com.doeiqts.pizzavoter.servlet;
 
 import com.doeiqts.pizzavoter.domain.Order;
 import com.doeiqts.pizzavoter.domain.Pizza;
-import com.doeiqts.pizzavoter.enums.*;
+import com.doeiqts.pizzavoter.enums.Crust;
+import com.doeiqts.pizzavoter.enums.Position;
+import com.doeiqts.pizzavoter.enums.Sauce;
+import com.doeiqts.pizzavoter.enums.Size;
+import com.doeiqts.pizzavoter.enums.Topping;
 import com.doeiqts.pizzavoter.util.MapUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.users.User;
@@ -14,7 +18,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PizzaVoterServlet extends HttpServlet {
     private Order currentOrder = new Order();
@@ -131,7 +141,12 @@ public class PizzaVoterServlet extends HttpServlet {
             String[] positions = request.getParameterValues("position" + pizzaNumber);
             for (int i = 0; i < toppings.length; i++) {
                 if (toppings[i] != "") {
-                    pizza.addTopping(Topping.valueOf(toppings[i]),Position.valueOf(positions[i]));
+                    Position newPosition = Position.valueOf(positions[i]);
+                    Position old = pizza.addTopping(Topping.valueOf(toppings[i]),newPosition);
+                    if((Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
+                        (Position.LEFT.equals(old) && newPosition.equals(Position.RIGHT))) {
+                        pizza.addTopping(Topping.valueOf(toppings[i]), Position.ALL);
+                    }
                 }
             }
             return pizza;

@@ -1,6 +1,10 @@
 package com.doeiqts.pizzavoter.domain;
 
-import com.doeiqts.pizzavoter.enums.*;
+import com.doeiqts.pizzavoter.enums.Crust;
+import com.doeiqts.pizzavoter.enums.Position;
+import com.doeiqts.pizzavoter.enums.Sauce;
+import com.doeiqts.pizzavoter.enums.Size;
+import com.doeiqts.pizzavoter.enums.Topping;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

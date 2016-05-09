@@ -1,6 +1,10 @@
 package com.doeiqts.pizzavoter.domain;
 
-import com.doeiqts.pizzavoter.enums.*;
+import com.doeiqts.pizzavoter.enums.Crust;
+import com.doeiqts.pizzavoter.enums.Position;
+import com.doeiqts.pizzavoter.enums.Sauce;
+import com.doeiqts.pizzavoter.enums.Size;
+import com.doeiqts.pizzavoter.enums.Topping;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,7 +14,6 @@ public class Pizza {
     private Size size;
     private Crust crust;
     private Sauce sauce;
-    private String createdByUser;
 
     private Map<Topping, Position> toppings = new TreeMap<>();
 
@@ -22,16 +25,8 @@ public class Pizza {
         toppings.put(Topping.CHEESE, Position.ALL);
     }
 
-    public Pizza(Size size, Crust crust, Sauce sauce, String createdByUser) {
-        this.crust = crust;
-        this.size = size;
-        this.sauce = sauce;
-        this.createdByUser = createdByUser;
-        toppings.put(Topping.CHEESE, Position.ALL);
-    }
-
-    public void addTopping(Topping topping, Position position) {
-        this.toppings.put(topping,position);
+    public Position addTopping(Topping topping, Position position) {
+        return this.toppings.put(topping,position);
     }
 
     public double countToppings() {

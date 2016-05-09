@@ -6,7 +6,8 @@ import com.doeiqts.pizzavoter.domain.Vote;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MapUtilTest
 {

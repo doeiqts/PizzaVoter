@@ -16,16 +16,16 @@ public class Vote implements Comparable<Vote> {
     }
 
     public Vote addToVote(String userName) {
-        if(!this.usersWhoVoted.contains(userName)) {
-            this.count = (null == count) ? 1 : count + 1;
-            this.usersWhoVoted.add(userName);
+        if(this.usersWhoVoted.add(userName)) {
+            this.count = count + 1;
         }
         return this;
     }
 
     public Vote removeVote(String userName) {
-        this.count = count - 1;
-        this.usersWhoVoted.remove(userName);
+        if(this.usersWhoVoted.remove(userName)) {
+            this.count = count - 1;
+        }
         return this;
     }
 
