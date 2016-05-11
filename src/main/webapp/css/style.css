@@ -18,10 +18,21 @@ body {
     margin-top: 10px;
 }
 
-.truncate {
-  width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  float: left;
+.pizza-radio > input {
+    visibility: hidden;
+    position: absolute;
+}
+
+label.pizza-radio {
+    display: inline !important;
+    margin-left: -5px;
+}
+
+.pizza-radio > input + i {
+    cursor:pointer;
+    border:2px solid transparent;
+}
+
+.pizza-radio > input:checked + i {
+    color: #337ab7;
 }

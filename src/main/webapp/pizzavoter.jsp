@@ -28,7 +28,6 @@
 
 </head>
 <body>
-
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -52,10 +51,16 @@
     </div>
 
     <div class="container">
+        <c:if test="${limitExceeded}">
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Topping Limit of <strong>${limit}</strong> was exceeded. Excess toppings have been removed from your pizzas.
+        </div>
+        </c:if>
         <form role="form" name="vote" method="post" action="/">
             <div class="row">
                 <c:forEach begin="0" end="3" varStatus="pizza">
-                    <div class=" col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                    <div class=" col-lg-3 col-md-3 col-sm-6 col-xs-8">
                         <div class="panel panel-default">
                             <div class="panel-heading pizza-header">Pizza ${pizza.count} <span onclick="clearMyPizzaVote(${pizza.count})" class="glyphicon glyphicon-remove pull-right text-danger" aria-hidden="true"></span></div>
                             <div class="panel-body">
@@ -85,73 +90,94 @@
                                     <label for="toppings${pizza.count}">
                                         Toppings
                                     </label>
-                                    <c:choose>
-                                    <c:when test="${fn:length(userPizzas) > pizza.index && !empty userPizzas[pizza.index]}">
-                                        <c:set var="lineCount" value="${0}" />
-                                        <c:forEach var="toppingMap" items="${userPizzas[pizza.index].toppings}" varStatus="toppingLoop">
-                                            <c:if test="${toppingMap.key ne 'CHEESE'}">
-                                                <c:set var="lineCount" value="${lineCount + 1}" />
-                                                <div id="row${pizza.count}-${lineCount}" class="row">
-                                                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-                                                        <select class="form-control" id="toppings${pizza.count}-${lineCount}" name="toppings${pizza.count}">
-                                                            <option value=""></option>
-                                                        <c:forEach var="topping" items="${toppings}">
-                                                            <option value="${topping}" ${toppingMap.key == topping ? "selected" : ""}>
-                                                                <c:out value="${topping}" />
-                                                            </option>
-                                                        </c:forEach>
-                                                        </select>
-                                                    </div>
-                                                    <input id="position${pizza.count}-${lineCount}" name="position${pizza.count}" type="hidden" value="${toppingMap.value}">
-                                                    <i id="leftTop${pizza.count}-${lineCount}" onclick="setPosition(${pizza.count},${lineCount},'LEFT')" class="fa fa-adjust fa-flip-horizontal fa-lg ${toppingMap.value == 'LEFT' ? 'text-primary' : ''}" aria-hidden="true"></i>
-                                                    <c:if test="${lineCount <= 2}"><i id="allTop${pizza.count}-${lineCount}" onclick="setPosition(${pizza.count},${lineCount},'ALL')" class="fa fa-circle fa-lg ${toppingMap.value == 'ALL' ? 'text-primary' : ''}" aria-hidden="true"></i></c:if>
-                                                    <i id="rightTop${pizza.count}-${lineCount}" onclick="setPosition(${pizza.count},${lineCount},'RIGHT')" class="fa fa-adjust fa-lg ${toppingMap.value == 'RIGHT' ? 'text-primary' : ''}" aria-hidden="true"></i>
+                                    <c:set var="lineCount" value="${0}" />
+                                    <c:if test="${fn:length(userPizzas) > pizza.index}">
+                                    <c:forEach var="toppingMap" items="${userPizzas[pizza.index].toppings}" varStatus="toppingLoop">
+                                        <c:if test="${toppingMap.key ne 'CHEESE'}">
+                                            <c:set var="lineCount" value="${lineCount + 1}" />
+                                            <div id="row${pizza.count}-${lineCount}" class="row">
+                                                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                                                    <select class="form-control" id="toppings${pizza.count}-${lineCount}" name="toppings${pizza.count}">
+                                                        <option value=""></option>
+                                                    <c:forEach var="topping" items="${toppings}">
+                                                        <option value="${topping}" ${toppingMap.key == topping ? "selected" : ""}>
+                                                            <c:out value="${topping}" />
+                                                        </option>
+                                                    </c:forEach>
+                                                    </select>
                                                 </div>
-                                            </c:if>
-                                        </c:forEach>
-                                        <c:if test="${lineCount < 4}">
-                                             <c:forEach begin="${lineCount}" end="3" varStatus="toppingLoop">
-                                                <c:set var="lineCount" value="${lineCount + 1}" />
-                                                <div id="row${pizza.count}-${lineCount}" class="row ${lineCount > 2 ? 'hidden' : '' }">
-                                                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-                                                        <select class="form-control" id="toppings${pizza.count}-${lineCount}" name="toppings${pizza.count}">
-                                                            <option value=""></option>
-                                                        <c:forEach var="topping" items="${toppings}">
-                                                            <option value="${topping}" >
-                                                                <c:out value="${topping}" />
-                                                            </option>
-                                                        </c:forEach>
-                                                        </select>
-                                                    </div>
-                                                    <input id="position${pizza.count}-${lineCount}" name="position${pizza.count}" type="hidden" value="ALL">
-                                                    <i id="leftTop${pizza.count}-${lineCount}" onclick="setPosition(${pizza.count},${lineCount},'LEFT')" class="fa fa-adjust fa-flip-horizontal fa-lg" aria-hidden="true"></i>
-                                                    <c:if test="${lineCount <= 2}"><i id="allTop${pizza.count}-${lineCount}" onclick="setPosition(${pizza.count},${lineCount},'ALL')" class="fa fa-circle fa-lg text-primary" aria-hidden="true"></i></c:if>
-                                                    <i id="rightTop${pizza.count}-${lineCount}" onclick="setPosition(${pizza.count},${lineCount},'RIGHT')" class="fa fa-adjust fa-lg" aria-hidden="true"></i>
-                                                </div>
-                                            </c:forEach>
+                                                <label class="pizza-radio">
+                                                    <input id="leftTop${pizza.count}-${lineCount}" name="position${pizza.count}-${lineCount}" ${toppingMap.value eq 'LEFT' ? 'checked' : ''} type="radio" value="LEFT" />
+                                                    <i class="fa fa-adjust fa-flip-horizontal fa-lg" aria-hidden="true"></i>
+                                                </label>
+                                                <label class="pizza-radio">
+                                                    <input id="allTop${pizza.count}-${lineCount}" name="position${pizza.count}-${lineCount}" type="radio" ${toppingMap.value eq 'ALL' ? 'checked' : ''} value="ALL" />
+                                                    <i class="fa fa-circle fa-lg" aria-hidden="true"></i>
+                                                </label>
+                                                <label class="pizza-radio">
+                                                    <input id="rightTop${pizza.count}-${lineCount}"  name="position${pizza.count}-${lineCount}" type="radio" ${toppingMap.value eq 'RIGHT' ? 'checked' : ''} value="RIGHT" />
+                                                    <i class="fa fa-adjust fa-lg" aria-hidden="true"></i>
+                                                </label>
+                                            </div>
                                         </c:if>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:forEach begin="0" end="3" varStatus="toppingLoop">
-                                            <div id="row${pizza.count}-${toppingLoop.count}" class="row ${toppingLoop.count > 2 ? 'hidden' : '' }">
-                                            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-                                                <select class="form-control" id="toppings${pizza.count}-${toppingLoop.count}" name="toppings${pizza.count}">
-                                                    <option value=""></option>
-                                                <c:forEach var="topping" items="${toppings}">
-                                                    <option value="${topping}" >
-                                                        <c:out value="${topping}" />
-                                                    </option>
-                                                </c:forEach>
-                                                </select>
+                                        <c:if test="${toppingLoop.last}">
+                                            <c:set var="lineCount" value="${lineCount + 1}" />
+                                            <div id="row${pizza.count}-${lineCount}" class="row">
+                                                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                                                    <select class="form-control" id="toppings${pizza.count}-${lineCount}" name="toppings${pizza.count}">
+                                                        <option value=""></option>
+                                                    <c:forEach var="topping" items="${toppings}">
+                                                        <option value="${topping}">
+                                                            <c:out value="${topping}" />
+                                                        </option>
+                                                    </c:forEach>
+                                                    </select>
+                                                </div>
+                                                <label class="pizza-radio">
+                                                    <input id="leftTop${pizza.count}-${lineCount}" name="position${pizza.count}-${lineCount}" type="radio" value="LEFT" />
+                                                    <i class="fa fa-adjust fa-flip-horizontal fa-lg" aria-hidden="true"></i>
+                                                </label>
+                                                <label class="pizza-radio">
+                                                    <input id="allTop${pizza.count}-${lineCount}" name="position${pizza.count}-${lineCount}" type="radio" checked value="ALL" />
+                                                    <i class="fa fa-circle fa-lg" aria-hidden="true"></i>
+                                                </label>
+                                                <label class="pizza-radio">
+                                                    <input id="rightTop${pizza.count}-${lineCount}"  name="position${pizza.count}-${lineCount}" type="radio" value="RIGHT" />
+                                                    <i class="fa fa-adjust fa-lg" aria-hidden="true"></i>
+                                                </label>
                                             </div>
-                                            <input id="position${pizza.count}-${toppingLoop.count}" name="position${pizza.count}" type="hidden" value="ALL">
-                                            <i id="leftTop${pizza.count}-${toppingLoop.count}" onclick="setPosition(${pizza.count},${toppingLoop.count},'LEFT')" class="fa fa-adjust fa-flip-horizontal fa-lg" aria-hidden="true"></i>
-                                            <c:if test="${toppingLoop.count <= 2}"><i id="allTop${pizza.count}-${toppingLoop.count}" onclick="setPosition(${pizza.count},${toppingLoop.count},'ALL')" class="fa fa-circle fa-lg text-primary" aria-hidden="true"></i></c:if>
-                                            <i id="rightTop${pizza.count}-${toppingLoop.count}" onclick="setPosition(${pizza.count},${toppingLoop.count},'RIGHT')" class="fa fa-adjust fa-lg" aria-hidden="true"></i>
+                                        </c:if>
+                                    </c:forEach>
+                                    </c:if>
+                                    <c:if test="${lineCount < 10}">
+                                         <c:forEach begin="${lineCount}" end="9" varStatus="toppingLoop">
+                                            <c:set var="lineCount" value="${lineCount + 1}" />
+                                            <div id="row${pizza.count}-${lineCount}" class="row ${lineCount > 1 ? 'hidden' : '' }">
+                                                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                                                    <select class="form-control" id="toppings${pizza.count}-${lineCount}" name="toppings${pizza.count}">
+                                                        <option value=""></option>
+                                                    <c:forEach var="topping" items="${toppings}">
+                                                        <option value="${topping}" >
+                                                            <c:out value="${topping}" />
+                                                        </option>
+                                                    </c:forEach>
+                                                    </select>
+                                                </div>
+                                                <label class="pizza-radio">
+                                                    <input id="leftTop${pizza.count}-${lineCount}" name="position${pizza.count}-${lineCount}" type="radio" value="LEFT" />
+                                                    <i  class="fa fa-adjust fa-flip-horizontal fa-lg" aria-hidden="true"></i>
+                                                </label>
+                                                <label class="pizza-radio">
+                                                    <input id="allTop${pizza.count}-${lineCount}" name="position${pizza.count}-${lineCount}"  checked="checked" type="radio" value="ALL" />
+                                                    <i class="fa fa-circle fa-lg" aria-hidden="true"></i>
+                                                </label>
+                                                <label class="pizza-radio">
+                                                    <input id="rightTop${pizza.count}-${lineCount}" name="position${pizza.count}-${lineCount}" type="radio" value="RIGHT" />
+                                                    <i class="fa fa-adjust fa-lg" aria-hidden="true"></i>
+                                                </label>
                                             </div>
                                         </c:forEach>
-                                    </c:otherwise>
-                                    </c:choose>
+                                    </c:if>
                                 </div>
                             </div>
                         </div>
@@ -193,11 +219,11 @@
                 <div class="col-md-3 col-sm-4 col-xs-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <span class="truncate">
-                                <strong><c:out value="${pizza.key.crust}" /> <c:out value="${pizza.key.sauce}" /></strong>
-                            </span>
                             <span class="badge pull-right">${pizza.value.count}</span>
-                            <br>
+                            <span>
+                                <strong><c:out value="${pizza.key.crust}" /></strong><br>
+                                <strong><c:out value="${pizza.key.sauce}" /></strong>
+                            </span>
                         </div>
                         <div class="panel-body">
                             <c:if test="${fn:contains(pizza.value.usersWhoVoted, name)}"><span class="label label-success pull-right">Voted For</span></c:if>
@@ -236,46 +262,14 @@
         function clearMyPizzaVote(pizzaNumber) {
             $("#crust" + pizzaNumber)[0].selectedIndex = 0;
             $("#sauce" + pizzaNumber)[0].selectedIndex = 0;
-            $("#toppings" + pizzaNumber + "-1")[0].selectedIndex = 0;
-            $("#toppings" + pizzaNumber + "-2")[0].selectedIndex = 0;
-            $("#toppings" + pizzaNumber + "-3")[0].selectedIndex = 0;
-            $("#toppings" + pizzaNumber + "-4")[0].selectedIndex = 0;
-            setPosition(pizzaNumber,1,"ALL");
-            setPosition(pizzaNumber,2,"ALL");
-        }
-
-        function setPosition(pizzaNumber, toppingNumber, position) {
-            $("#position" + pizzaNumber + "-" + toppingNumber).val(position);
-            $("#leftTop" + pizzaNumber + "-" + toppingNumber).removeClass('text-primary');
-            $("#allTop" + pizzaNumber + "-" + toppingNumber).removeClass('text-primary');
-            $("#rightTop" + pizzaNumber + "-" + toppingNumber).removeClass('text-primary');
-
-            if(position === "LEFT") {
-                $("#leftTop" + pizzaNumber + "-" + toppingNumber).addClass('text-primary');
-                if(toppingNumber <= 2) {
-                    $("#row" + pizzaNumber + "-" + (toppingNumber+ 2)).removeClass('hidden');
-                    $("#position" + pizzaNumber + "-" + (toppingNumber+2)).val("RIGHT");
-                    $("#leftTop" + pizzaNumber + "-" + (toppingNumber+2)).removeClass('text-primary');
-                    $("#rightTop" + pizzaNumber + "-" + (toppingNumber+2)).addClass('text-primary');
-                }
-            } else if(position === "ALL") {
-                $("#allTop" + pizzaNumber + "-" + toppingNumber).addClass('text-primary');
-                if(toppingNumber <= 2) {
-                    $("#row" + pizzaNumber + "-" + (toppingNumber+ 2)).addClass('hidden');
-                    $("#position" + pizzaNumber + "-" + (toppingNumber+2)).val();
-                    $("#toppings" + pizzaNumber + "-" + (toppingNumber+2))[0].selectedIndex = 0;
-                }
-            } else if(position === "RIGHT") {
-                $("#rightTop" + pizzaNumber + "-" + toppingNumber).addClass('text-primary');
-                if(toppingNumber <= 2) {
-                    $("#row" + pizzaNumber + "-" + (toppingNumber+2)).removeClass('hidden');
-                    $("#position" + pizzaNumber + "-" + (toppingNumber+2)).val("LEFT");
-                    $("#leftTop" + pizzaNumber + "-" + (toppingNumber+2)).addClass('text-primary');
-                    $("#rightTop" + pizzaNumber + "-" + (toppingNumber+2)).removeClass('text-primary');
+            for(var i = 1; i <= 10; i++) {
+                $("#toppings" + pizzaNumber + "-" + i)[0].selectedIndex = 0;
+                $("#allTop" + pizzaNumber + "-" + i).prop("checked", true);
+                if(i > 1) {
+                    $("#row" + pizzaNumber + "-" + i).addClass("hidden");
                 }
             }
         }
-
 
         function setMyPizzaVote(pizzaNumber, crust, sauce, topMap) {
             $("#crust" + pizzaNumber).val(crust);
@@ -285,31 +279,34 @@
                 if (topMap.hasOwnProperty(key)) {
                     if(key !== "Cheese") {
                         $("#toppings" + pizzaNumber + '-' + i).val(key.replace(" ", "_").toUpperCase());
-                        setPosition(pizzaNumber, i, topMap[key]);
+                        $("#row" + pizzaNumber + "-" + i).removeClass("hidden");
+                        if(topMap[key] === 'LEFT') {
+                            $("#leftTop" + pizzaNumber + "-" + i).prop("checked", true);
+                        }else if(topMap[key] === 'RIGHT') {
+                            $("#rightTop" + pizzaNumber + "-" + i).prop("checked", true);
+                        } else if(topMap[key] === 'ALL') {
+                            $("#allTop" + pizzaNumber + "-" + i).prop("checked", true);
+                        }
                     }
                     i++;
                 }
             }
+            $("#row" + pizzaNumber + "-" + i).removeClass("hidden");
         }
 
-
-        window.onload = function() {
+        $(function() {
             <c:forEach begin="0" end="3" varStatus="pizza">
-            <c:if test="${fn:length(userPizzas) > pizza.index && !empty userPizzas[pizza.index]}">
-             <c:set var="lineCount" value="${0}" />
-            <c:forEach var="toppingMap" items="${userPizzas[pizza.index].toppings}" varStatus="toppingLoop">
-                <c:if test="${toppingMap.key ne 'CHEESE'}">
-                    <c:set var="lineCount" value="${lineCount + 1}" />
-                    setPosition(${pizza.count}, ${lineCount}, '${toppingMap.value}');
-                </c:if>
+                <c:forEach begin="0" end="9" varStatus="line">
+                    $("#toppings${pizza.count}-${line.count}").change(function() {
+                        if($(this).val() !== "") {
+                            $("#row${pizza.count}-${line.count + 1}").removeClass("hidden");
+                        }
+                    });
+                </c:forEach>
             </c:forEach>
-            </c:if>
-            </c:forEach>
-
             <c:forEach var="pizza" items="${pizzas}" varStatus="pizzaLoop">
-                document.getElementById("votedPizza${pizzaLoop.count}").onclick = function() {
+                 $("#votedPizza${pizzaLoop.count}").click(function() {
                     var topMap${pizzaLoop.count} = ${pizza.key.toppingsJson};
-
 
                     if ($("#crust1")[0].selectedIndex == 0) {
                         setMyPizzaVote(1, "${pizza.key.crust}", "${pizza.key.sauce}", topMap${pizzaLoop.count});
@@ -324,9 +321,9 @@
                     }
 
                     return false;
-                }
+                });
             </c:forEach>
-        }
+        });
     </script>
 </body>
 </html>

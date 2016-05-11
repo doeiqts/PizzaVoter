@@ -5,15 +5,21 @@ import com.doeiqts.pizzavoter.enums.Position;
 import com.doeiqts.pizzavoter.enums.Sauce;
 import com.doeiqts.pizzavoter.enums.Size;
 import com.doeiqts.pizzavoter.enums.Topping;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Pizza {
+    private static final double LIMIT = 3.0; //effectively 2 but cheese is on everything...
     private Size size;
     private Crust crust;
     private Sauce sauce;
+    private double toppingCount;
 
     private Map<Topping, Position> toppings = new TreeMap<>();
 
@@ -23,19 +29,28 @@ public class Pizza {
         this.size = size;
         this.sauce = sauce;
         toppings.put(Topping.CHEESE, Position.ALL);
+        //it's effectively 0 but cheese is on everything...not sure how I feel about this...
+        toppingCount = 1.0;
     }
 
     public Position addTopping(Topping topping, Position position) {
-        return this.toppings.put(topping,position);
+        double old = 0.0; //if duplicate topping positions are sent need to subtract existing topping value)
+        Position existing = this.toppings.get(topping);
+        if(null != existing) {
+            old = existing.getValue();
+        }
+        if((this.getToppingCount() - old + position.getValue()) <= LIMIT) {
+            toppingCount = toppingCount - old + position.getValue();
+            return this.toppings.put(topping, position);
+        }
+        return null;
     }
 
-    public double countToppings() {
-        double toppingCount = 0;
-        for(Map.Entry<Topping,Position> set   : toppings.entrySet()) {
-            toppingCount += (set.getValue().equals(Position.ALL)) ? 1 : 0.5;
-        }
-        return toppingCount;
+    public static double getToppingLimit() {
+        return LIMIT;
     }
+
+    public double getToppingCount() { return toppingCount; }
 
     public Size getSize() {
         return size;

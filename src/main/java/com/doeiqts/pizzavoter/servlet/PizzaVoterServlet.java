@@ -8,7 +8,6 @@ import com.doeiqts.pizzavoter.enums.Sauce;
 import com.doeiqts.pizzavoter.enums.Size;
 import com.doeiqts.pizzavoter.enums.Topping;
 import com.doeiqts.pizzavoter.util.MapUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -29,7 +28,6 @@ import java.util.Set;
 public class PizzaVoterServlet extends HttpServlet {
     private Order currentOrder = new Order();
     private Map<String, Set<Pizza>> individualOrders = new HashMap<>();
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -114,6 +112,7 @@ public class PizzaVoterServlet extends HttpServlet {
         request.setAttribute("name", currentUser.getNickname());
         request.setAttribute("crusts", Crust.values());
         request.setAttribute("sauces", Sauce.values());
+        request.setAttribute("limit", (int) (Pizza.getToppingLimit()-1));
 
         // Since cheese is defaulted, don't let it be a choice for the toppings.
         EnumSet<Topping> toppings = EnumSet.allOf(Topping.class);
@@ -138,17 +137,22 @@ public class PizzaVoterServlet extends HttpServlet {
                     Sauce.valueOf(request.getParameter("sauce" + pizzaNumber)));
 
             String[] toppings = request.getParameterValues("toppings" + pizzaNumber);
-            String[] positions = request.getParameterValues("position" + pizzaNumber);
             for (int i = 0; i < toppings.length; i++) {
-                if (toppings[i] != "") {
-                    Position newPosition = Position.valueOf(positions[i]);
-                    Position old = pizza.addTopping(Topping.valueOf(toppings[i]),newPosition);
-                    if(Position.ALL.equals(old) || (Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
-                        (Position.LEFT.equals(old) && newPosition.equals(Position.RIGHT))) {
-                        pizza.addTopping(Topping.valueOf(toppings[i]), Position.ALL);
+                if (toppings[i] != "" && pizza.getToppingCount() < Pizza.getToppingLimit()) {
+                    String[] positions = request.getParameterValues("position" + pizzaNumber + "-"+(i+1));
+                    if(null != positions) {
+                        Position newPosition = Position.valueOf(positions[0]);
+                        Position old = pizza.addTopping(Topping.valueOf(toppings[i]), newPosition);
+                        if (Position.ALL.equals(old) || (Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
+                                (Position.LEFT.equals(old) && newPosition.equals(Position.RIGHT))) {
+                            pizza.addTopping(Topping.valueOf(toppings[i]), Position.ALL);
+                        }
                     }
+                } else if(toppings[i].trim() != "") {
+                    request.setAttribute("limitExceeded", true);
                 }
             }
+
             return pizza;
         } catch (IllegalArgumentException e) {
             // Missing pizza parameters
