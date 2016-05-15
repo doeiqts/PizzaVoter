@@ -9,6 +9,7 @@ import com.doeiqts.pizzavoter.enums.Topping;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class Pizza {
         toppingCount = 1.0;
     }
 
-    public Position addTopping(Topping topping, Position position) {
+    public Position addTopping(Topping topping, Position position, HttpServletRequest request) {
         double old = 0.0; //if duplicate topping positions are sent need to subtract existing topping value)
         Position existing = this.toppings.get(topping);
         if(null != existing) {
@@ -42,8 +43,27 @@ public class Pizza {
         if((this.getToppingCount() - old + position.getValue()) <= LIMIT) {
             toppingCount = toppingCount - old + position.getValue();
             return this.toppings.put(topping, position);
+        } else {
+            request.setAttribute("limitExceeded", true);
         }
         return null;
+    }
+
+    public void addAllToppings(String pizzaNumber,HttpServletRequest request) {
+        String[] toppings = request.getParameterValues("toppings" + pizzaNumber);
+        for (int i = 0; i < toppings.length; i++) {
+            if (toppings[i] != "") {
+                String[] positions = request.getParameterValues("position" + pizzaNumber + "-"+(i+1));
+                if(null != positions) {
+                    Position newPosition = Position.valueOf(positions[0]);
+                    Position old = this.addTopping(Topping.valueOf(toppings[i]), newPosition, request);
+                    if (Position.ALL.equals(old) || (Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
+                            (Position.LEFT.equals(old) && newPosition.equals(Position.RIGHT))) {
+                        this.addTopping(Topping.valueOf(toppings[i]), Position.ALL, request);
+                    }
+                }
+            }
+        }
     }
 
     public static double getToppingLimit() {

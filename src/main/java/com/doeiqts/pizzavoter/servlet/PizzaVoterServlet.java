@@ -135,23 +135,7 @@ public class PizzaVoterServlet extends HttpServlet {
             Pizza pizza = new Pizza(Size.MEDIUM,
                     Crust.valueOf(request.getParameter("crust" + pizzaNumber)),
                     Sauce.valueOf(request.getParameter("sauce" + pizzaNumber)));
-
-            String[] toppings = request.getParameterValues("toppings" + pizzaNumber);
-            for (int i = 0; i < toppings.length; i++) {
-                if (toppings[i] != "" && pizza.getToppingCount() < Pizza.getToppingLimit()) {
-                    String[] positions = request.getParameterValues("position" + pizzaNumber + "-"+(i+1));
-                    if(null != positions) {
-                        Position newPosition = Position.valueOf(positions[0]);
-                        Position old = pizza.addTopping(Topping.valueOf(toppings[i]), newPosition);
-                        if (Position.ALL.equals(old) || (Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
-                                (Position.LEFT.equals(old) && newPosition.equals(Position.RIGHT))) {
-                            pizza.addTopping(Topping.valueOf(toppings[i]), Position.ALL);
-                        }
-                    }
-                } else if(toppings[i].trim() != "") {
-                    request.setAttribute("limitExceeded", true);
-                }
-            }
+            pizza.addAllToppings(pizzaNumber,request);
 
             return pizza;
         } catch (IllegalArgumentException e) {

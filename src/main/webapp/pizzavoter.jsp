@@ -60,7 +60,7 @@
         <form role="form" name="vote" method="post" action="/">
             <div class="row">
                 <c:forEach begin="0" end="3" varStatus="pizza">
-                    <div class=" col-lg-3 col-md-3 col-sm-6 col-xs-8">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-9">
                         <div class="panel panel-default">
                             <div class="panel-heading pizza-header">Pizza ${pizza.count} <span onclick="clearMyPizzaVote(${pizza.count})" class="glyphicon glyphicon-remove pull-right text-danger" aria-hidden="true"></span></div>
                             <div class="panel-body">
@@ -182,6 +182,15 @@
                             </div>
                         </div>
                     </div>
+                <c:if test="${pizza.count % 4 == 0}">
+                    <div class="clearfix visible-lg-block"></div>
+                </c:if>
+                <c:if test="${pizza.count % 3 == 0}">
+                    <div class="clearfix  visible-md-block "></div>
+                </c:if>
+                <c:if test="${pizza.count % 2 == 0}">
+                    <div class="clearfix visible-xs-block visible-sm-block"></div>
+                </c:if>
                 </c:forEach>
             </div>
             <div class="row top-buffer">
