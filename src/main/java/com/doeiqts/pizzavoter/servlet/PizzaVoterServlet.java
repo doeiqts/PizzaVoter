@@ -112,7 +112,7 @@ public class PizzaVoterServlet extends HttpServlet {
         request.setAttribute("name", currentUser.getNickname());
         request.setAttribute("crusts", Crust.values());
         request.setAttribute("sauces", Sauce.values());
-        request.setAttribute("limit", (int) (Pizza.getToppingLimit()-1));
+        request.setAttribute("limit", Pizza.getToppingLimit());
 
         // Since cheese is defaulted, don't let it be a choice for the toppings.
         EnumSet<Topping> toppings = EnumSet.allOf(Topping.class);
@@ -135,7 +135,16 @@ public class PizzaVoterServlet extends HttpServlet {
             Pizza pizza = new Pizza(Size.MEDIUM,
                     Crust.valueOf(request.getParameter("crust" + pizzaNumber)),
                     Sauce.valueOf(request.getParameter("sauce" + pizzaNumber)));
-            pizza.addAllToppings(pizzaNumber,request);
+
+            String[] toppings = request.getParameterValues("toppings" + pizzaNumber);
+            for (int i = 0; i < toppings.length; i++) {
+                String position = request.getParameter("position" + pizzaNumber + "-"+(i+1));
+                if (position != null && toppings[i] != "") {
+                    if(!pizza.addTopping(Topping.valueOf(toppings[i]), Position.valueOf(position))) {
+                        request.setAttribute("limitExceeded", true);
+                    }
+                }
+            }
 
             return pizza;
         } catch (IllegalArgumentException e) {
