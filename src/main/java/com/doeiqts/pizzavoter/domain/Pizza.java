@@ -5,64 +5,39 @@ import com.doeiqts.pizzavoter.enums.Position;
 import com.doeiqts.pizzavoter.enums.Sauce;
 import com.doeiqts.pizzavoter.enums.Size;
 import com.doeiqts.pizzavoter.enums.Topping;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Pizza {
-    private static final double LIMIT = 3.0; //effectively 2 but cheese is on everything...
+    private static final double LIMIT = 2.0;
     private Size size;
     private Crust crust;
     private Sauce sauce;
-    private double toppingCount;
 
     private Map<Topping, Position> toppings = new TreeMap<>();
-
 
     public Pizza(Size size, Crust crust, Sauce sauce) {
         this.crust = crust;
         this.size = size;
         this.sauce = sauce;
         toppings.put(Topping.CHEESE, Position.ALL);
-        //it's effectively 0 but cheese is on everything...not sure how I feel about this...
-        toppingCount = 1.0;
     }
 
-    public Position addTopping(Topping topping, Position position, HttpServletRequest request) {
-        double old = 0.0; //if duplicate topping positions are sent need to subtract existing topping value)
-        Position existing = this.toppings.get(topping);
-        if(null != existing) {
-            old = existing.getValue();
-        }
-        if((this.getToppingCount() - old + position.getValue()) <= LIMIT) {
-            toppingCount = toppingCount - old + position.getValue();
-            return this.toppings.put(topping, position);
-        } else {
-            request.setAttribute("limitExceeded", true);
-        }
-        return null;
-    }
+    public boolean addTopping(Topping topping, Position position) {
+        if (getToppingCount() < LIMIT) {
+            toppings.put(topping, position.combinePositions(toppings.get(topping)));
 
-    public void addAllToppings(String pizzaNumber,HttpServletRequest request) {
-        String[] toppings = request.getParameterValues("toppings" + pizzaNumber);
-        for (int i = 0; i < toppings.length; i++) {
-            if (toppings[i] != "") {
-                String[] positions = request.getParameterValues("position" + pizzaNumber + "-"+(i+1));
-                if(null != positions) {
-                    Position newPosition = Position.valueOf(positions[0]);
-                    Position old = this.addTopping(Topping.valueOf(toppings[i]), newPosition, request);
-                    if (Position.ALL.equals(old) || (Position.RIGHT.equals(old) && newPosition.equals(Position.LEFT)) ||
-                            (Position.LEFT.equals(old) && newPosition.equals(Position.RIGHT))) {
-                        this.addTopping(Topping.valueOf(toppings[i]), Position.ALL, request);
-                    }
-                }
+            if (getToppingCount() > LIMIT) {
+                toppings.remove(topping);
+                return false;
             }
+
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -70,7 +45,17 @@ public class Pizza {
         return LIMIT;
     }
 
-    public double getToppingCount() { return toppingCount; }
+    public double getToppingCount() {
+        double toppingCount = 0.0;
+
+        for (Map.Entry<Topping, Position> entry : toppings.entrySet()) {
+            if (entry.getKey() != Topping.CHEESE) {
+                toppingCount += entry.getValue().getValue();
+            }
+        }
+
+        return toppingCount;
+    }
 
     public Size getSize() {
         return size;
@@ -96,14 +81,6 @@ public class Pizza {
         } catch (JsonProcessingException e) {
             return "";
         }
-    }
-
-    public List<Topping> getToppingList() {
-        return new ArrayList<>(toppings.keySet());
-    }
-
-    public List<Position> getPositionList() {
-        return new ArrayList<>(toppings.values());
     }
 
     @Override

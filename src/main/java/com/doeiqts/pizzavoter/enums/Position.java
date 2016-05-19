@@ -14,4 +14,12 @@ public enum Position {
     public double getValue() {
         return this.value;
     }
+
+    public Position combinePositions(Position position) {
+        if (this == position || position == null) {
+            return this;
+        } else {
+            return Position.ALL;
+        }
+    }
 }
