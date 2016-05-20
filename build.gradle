@@ -13,7 +13,6 @@ apply plugin: 'war'
 apply plugin: 'appengine'
 
 sourceCompatibility = 1.7
-version = '1.0'
 
 repositories {
     mavenCentral()
@@ -27,6 +26,14 @@ dependencies {
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.4'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.4'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.4.4'
+
+    //com/google/appengine/api/datastore/AsyncDatastoreService
+    //Caused by: java.lang.NoClassDefFoundError: com/google/appengine/api/datastore/AsyncDatastoreService
+    //at com.googlecode.objectify.ObjectifyService.<clinit>(ObjectifyService.java:21)
+    compile 'com.google.appengine:appengine-endpoints:1.9.28' //add this line to avoid upper comment
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.google.guava:guava:19.0'//add this
+    compile 'com.googlecode.objectify:objectify:5.1.12'  //works with ObjectifyFilter in web.xml
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.powermock:powermock-api-mockito:1.5.1'

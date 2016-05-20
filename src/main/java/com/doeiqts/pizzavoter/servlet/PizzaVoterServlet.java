@@ -7,10 +7,12 @@ import com.doeiqts.pizzavoter.enums.Position;
 import com.doeiqts.pizzavoter.enums.Sauce;
 import com.doeiqts.pizzavoter.enums.Size;
 import com.doeiqts.pizzavoter.enums.Topping;
+import com.doeiqts.pizzavoter.repositories.PizzaRepository;
 import com.doeiqts.pizzavoter.util.MapUtil;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.googlecode.objectify.ObjectifyService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +30,10 @@ import java.util.Set;
 public class PizzaVoterServlet extends HttpServlet {
     private Order currentOrder = new Order();
     private Map<String, Set<Pizza>> individualOrders = new HashMap<>();
+
+    static {
+        ObjectifyService.register(Pizza.class);
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -64,6 +70,7 @@ public class PizzaVoterServlet extends HttpServlet {
             Pizza pizza1 = serializePizza(request, "1");
             if (pizza1 != null) {
                 pizzaSet.add(pizza1);
+                PizzaRepository.savePizza(pizza1);
             }
 
             Pizza pizza2 = serializePizza(request, "2");

@@ -7,12 +7,17 @@ import com.doeiqts.pizzavoter.enums.Size;
 import com.doeiqts.pizzavoter.enums.Topping;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
 
 import java.util.Map;
 import java.util.TreeMap;
 
+@Entity
 public class Pizza {
     private static final double LIMIT = 2.0;
+    @Id
+    private Long id;
     private Size size;
     private Crust crust;
     private Sauce sauce;
