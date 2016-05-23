@@ -7,7 +7,7 @@ import com.doeiqts.pizzavoter.enums.Position;
 import com.doeiqts.pizzavoter.enums.Sauce;
 import com.doeiqts.pizzavoter.enums.Size;
 import com.doeiqts.pizzavoter.enums.Topping;
-import com.doeiqts.pizzavoter.repositories.PizzaRepository;
+import com.doeiqts.pizzavoter.repositories.OrderRepository;
 import com.doeiqts.pizzavoter.util.MapUtil;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -28,25 +28,25 @@ import java.util.Map;
 import java.util.Set;
 
 public class PizzaVoterServlet extends HttpServlet {
-    private Order currentOrder = new Order();
     private Map<String, Set<Pizza>> individualOrders = new HashMap<>();
 
     static {
-        ObjectifyService.register(Pizza.class);
+        ObjectifyService.register(Order.class);
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserService userService = UserServiceFactory.getUserService();
         User currentUser = userService.getCurrentUser();
+        Order currentOrder = OrderRepository.loadOrder("The Fangs of Phandalin");
 
         if (currentUser != null) {
             // Check for clear command
             if ("doeiqts".equals(currentUser.getNickname())) {
-                clearVotesForUser(request.getParameter("username"));
+                clearVotesForUser(request.getParameter("username"), currentOrder);
             }
 
-            setCommonRequestVariables(request, currentUser);
+            setCommonRequestVariables(request, currentUser, currentOrder);
 
             try{
                 request.getRequestDispatcher("/pizzavoter.jsp").forward(request, response);
@@ -62,6 +62,7 @@ public class PizzaVoterServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserService userService = UserServiceFactory.getUserService();
         User currentUser = userService.getCurrentUser();
+        Order currentOrder = OrderRepository.loadOrder("The Fangs of Phandalin");
 
         if (currentUser != null) {
             Set<Pizza> pizzaSet = new LinkedHashSet<>();
@@ -70,7 +71,6 @@ public class PizzaVoterServlet extends HttpServlet {
             Pizza pizza1 = serializePizza(request, "1");
             if (pizza1 != null) {
                 pizzaSet.add(pizza1);
-                PizzaRepository.savePizza(pizza1);
             }
 
             Pizza pizza2 = serializePizza(request, "2");
@@ -89,7 +89,7 @@ public class PizzaVoterServlet extends HttpServlet {
             }
 
             // Remove any previously voted on pizzas from this user.
-            clearVotesForUser(currentUser.getNickname());
+            clearVotesForUser(currentUser.getNickname(), currentOrder);
 
             // Save the users new votes.
             if (pizzaSet.isEmpty()) {
@@ -102,8 +102,9 @@ public class PizzaVoterServlet extends HttpServlet {
             for (Pizza pizza : pizzaSet) {
                 currentOrder.addPizza(pizza, currentUser.getNickname());
             }
+            OrderRepository.saveOrder(currentOrder);
 
-            setCommonRequestVariables(request, currentUser);
+            setCommonRequestVariables(request, currentUser, currentOrder);
 
             try{
                 request.getRequestDispatcher("/pizzavoter.jsp").forward(request, response);
@@ -115,7 +116,7 @@ public class PizzaVoterServlet extends HttpServlet {
         }
     }
 
-    private void setCommonRequestVariables(HttpServletRequest request, User currentUser) {
+    private void setCommonRequestVariables(HttpServletRequest request, User currentUser, Order currentOrder) {
         request.setAttribute("name", currentUser.getNickname());
         request.setAttribute("crusts", Crust.values());
         request.setAttribute("sauces", Sauce.values());
@@ -160,7 +161,7 @@ public class PizzaVoterServlet extends HttpServlet {
         }
     }
 
-    private void clearVotesForUser(String username) {
+    private void clearVotesForUser(String username, Order currentOrder) {
         Set<Pizza> pizzasToRemove = individualOrders.get(username);
 
         if (pizzasToRemove != null) {

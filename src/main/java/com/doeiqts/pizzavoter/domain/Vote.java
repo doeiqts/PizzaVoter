@@ -10,6 +10,10 @@ public class Vote implements Comparable<Vote> {
     private Integer count;
     private Set<String> usersWhoVoted = new HashSet<>();
 
+    public Vote() {
+        // Needed for Objectify
+    }
+
     public Vote(String userName) {
         this.count = 1;
         this.usersWhoVoted.add(userName);

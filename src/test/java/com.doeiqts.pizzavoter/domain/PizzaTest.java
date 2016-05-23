@@ -66,7 +66,7 @@ public class PizzaTest {
     public void testGetToppingCount_Returns_Zero() {
         Pizza pizza = new Pizza(Size.MEDIUM, Crust.HANDMADE_PAN, Sauce.TOMATO);
 
-        assertEquals(0, pizza.getToppingCount(), 0);
+        assertEquals(0, pizza.toppingCount(), 0);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class PizzaTest {
 
         pizza.addTopping(Topping.BACON, Position.ALL);
 
-        assertEquals(1, pizza.getToppingCount(), 0);
+        assertEquals(1, pizza.toppingCount(), 0);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class PizzaTest {
         pizza.addTopping(Topping.BACON, Position.ALL);
         pizza.addTopping(Topping.BANANA_PEPPERS, Position.LEFT);
 
-        assertEquals(1.5, pizza.getToppingCount(), 0);
+        assertEquals(1.5, pizza.toppingCount(), 0);
     }
 
     @Test
@@ -96,6 +96,6 @@ public class PizzaTest {
         pizza.addTopping(Topping.BANANA_PEPPERS, Position.ALL);
         pizza.addTopping(Topping.BEEF, Position.ALL);
 
-        assertEquals(2, pizza.getToppingCount(), 0);
+        assertEquals(2, pizza.toppingCount(), 0);
     }
 }

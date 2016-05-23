@@ -1,13 +1,29 @@
 package com.doeiqts.pizzavoter.domain;
 
+import com.doeiqts.pizzavoter.stringify.PizzaStringifier;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Stringify;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Entity
 public class Order {
+    @Id
+    private String partyName;
+    @Stringify(PizzaStringifier.class)
     private Map<Pizza, Vote> pizzas = new LinkedHashMap<>();
+
+    public Order() {
+        // Needed for Objectify
+    }
+
+    public Order(String partyName) {
+        this.partyName = partyName;
+    }
 
     public Map<Pizza, Vote> getPizzas() {
         return pizzas;

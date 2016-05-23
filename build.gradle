@@ -24,8 +24,8 @@ dependencies {
     providedCompile 'javax.servlet:servlet-api:2.5'
 
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.4'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.4'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.4'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
 
     //com/google/appengine/api/datastore/AsyncDatastoreService
     //Caused by: java.lang.NoClassDefFoundError: com/google/appengine/api/datastore/AsyncDatastoreService
