@@ -5,6 +5,7 @@ import com.doeiqts.pizzavoter.enums.Position;
 import com.doeiqts.pizzavoter.enums.Sauce;
 import com.doeiqts.pizzavoter.enums.Size;
 import com.doeiqts.pizzavoter.enums.Topping;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,12 +13,17 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class Pizza {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final double LIMIT = 2.0;
+
     private Size size;
     private Crust crust;
     private Sauce sauce;
-
     private Map<Topping, Position> toppings = new TreeMap<>();
+
+    public Pizza() {
+        // Needed for Objectify
+    }
 
     public Pizza(Size size, Crust crust, Sauce sauce) {
         this.crust = crust;
@@ -27,10 +33,10 @@ public class Pizza {
     }
 
     public boolean addTopping(Topping topping, Position position) {
-        if (getToppingCount() < LIMIT) {
+        if (toppingCount() < LIMIT) {
             toppings.put(topping, position.combinePositions(toppings.get(topping)));
 
-            if (getToppingCount() > LIMIT) {
+            if (toppingCount() > LIMIT) {
                 toppings.remove(topping);
                 return false;
             }
@@ -45,7 +51,7 @@ public class Pizza {
         return LIMIT;
     }
 
-    public double getToppingCount() {
+    public double toppingCount() {
         double toppingCount = 0.0;
 
         for (Map.Entry<Topping, Position> entry : toppings.entrySet()) {
@@ -73,6 +79,7 @@ public class Pizza {
         return toppings;
     }
 
+    @JsonIgnore
     public String getToppingsJson() {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -108,10 +115,8 @@ public class Pizza {
 
     @Override
     public String toString() {
-        ObjectMapper objectMapper = new ObjectMapper();
-
         try {
-            return objectMapper.writeValueAsString(this);
+            return OBJECT_MAPPER.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return "";
         }
