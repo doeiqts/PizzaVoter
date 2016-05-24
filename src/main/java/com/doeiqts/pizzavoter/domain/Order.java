@@ -7,8 +7,12 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Stringify;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 public class Order {
@@ -23,6 +27,10 @@ public class Order {
 
     public Order(String partyName) {
         this.partyName = partyName;
+    }
+
+    public String getPartyName() {
+        return partyName;
     }
 
     public Map<Pizza, Vote> getPizzas() {
@@ -48,6 +56,17 @@ public class Order {
                 pizzas.put(pizza, vote.removeVote(username));
             }
         }
+    }
+
+    public List<String> getVoters() {
+        // Change this later, but for now, just calculate the voters
+        Set<String> voters = new HashSet<>();
+
+        for (Vote vote : pizzas.values()) {
+            voters.addAll(vote.getUsersWhoVoted());
+        }
+
+        return new ArrayList<>(voters);
     }
 
     public int size() {

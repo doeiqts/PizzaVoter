@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Vote implements Comparable<Vote> {
-    private Integer count;
     private Set<String> usersWhoVoted = new HashSet<>();
 
     public Vote() {
@@ -15,26 +14,21 @@ public class Vote implements Comparable<Vote> {
     }
 
     public Vote(String userName) {
-        this.count = 1;
         this.usersWhoVoted.add(userName);
     }
 
     public Vote addToVote(String userName) {
-        if(this.usersWhoVoted.add(userName)) {
-            this.count = count + 1;
-        }
+        this.usersWhoVoted.add(userName);
         return this;
     }
 
     public Vote removeVote(String userName) {
-        if(this.usersWhoVoted.remove(userName)) {
-            this.count = count - 1;
-        }
+        this.usersWhoVoted.remove(userName);
         return this;
     }
 
     public Integer getCount() {
-        return count;
+        return usersWhoVoted.size();
     }
 
     public Set<String> getUsersWhoVoted() {
@@ -43,7 +37,7 @@ public class Vote implements Comparable<Vote> {
 
     @Override
     public int compareTo( final Vote o) {
-        return Integer.compare(this.count, o.getCount());
+        return Integer.compare(this.getCount(), o.getCount());
     }
 
     @Override
@@ -53,16 +47,13 @@ public class Vote implements Comparable<Vote> {
 
         Vote vote = (Vote) o;
 
-        if (count != null ? !count.equals(vote.count) : vote.count != null) return false;
         return usersWhoVoted != null ? usersWhoVoted.equals(vote.usersWhoVoted) : vote.usersWhoVoted == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = count != null ? count.hashCode() : 0;
-        result = 31 * result + (usersWhoVoted != null ? usersWhoVoted.hashCode() : 0);
-        return result;
+        return usersWhoVoted != null ? usersWhoVoted.hashCode() : 0;
     }
 
     @Override
