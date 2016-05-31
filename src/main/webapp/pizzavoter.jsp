@@ -6,6 +6,19 @@
 <head>
 	<meta charset="UTF-8">
 
+    <title>Pizza Voter</title>
+
+    <!-- favicon stuff -->
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+    <!-- Android Web App -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- iOS Web App -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
 	<!-- PizzaVoter style -->
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
 
