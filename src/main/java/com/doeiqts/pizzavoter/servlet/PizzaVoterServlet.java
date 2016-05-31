@@ -50,6 +50,7 @@ public class PizzaVoterServlet extends HttpServlet {
             // Check for clear command
             if ("doeiqts".equals(currentUser.getNickname()) && request.getParameter("username") != null) {
                 clearVotesForUser(request.getParameter("username"), currentOrder);
+                OrderRepository.saveOrder(currentOrder);
             }
 
             setCommonRequestVariables(request, userProfile, currentOrder);
@@ -188,6 +189,7 @@ public class PizzaVoterServlet extends HttpServlet {
 
             // Remove this party from the user's profile.
             userProfile.removePartyPizzas(currentOrder.getPartyName());
+            UserProfileRepository.saveUserProfile(userProfile);
         }
     }
 }
