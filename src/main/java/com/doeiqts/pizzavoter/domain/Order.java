@@ -20,6 +20,7 @@ public class Order {
     private String partyName;
     @Stringify(PizzaStringifier.class)
     private Map<Pizza, Vote> pizzas = new LinkedHashMap<>();
+    private double slicesPerPerson = 3.0;
 
     public Order() {
         // Needed for Objectify
@@ -71,6 +72,12 @@ public class Order {
 
     public int size() {
         return pizzas.size();
+    }
+
+    public int recommendedNumberOfPizzas() {
+        List<String> voters = getVoters();
+
+        return (int) Math.ceil(((double) voters.size()) * slicesPerPerson / 8.0);
     }
 
     @Override

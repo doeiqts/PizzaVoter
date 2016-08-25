@@ -151,6 +151,7 @@ public class PizzaVoterServlet extends HttpServlet {
         }
 
         request.setAttribute("userPizzas", userPizzas);
+        request.setAttribute("recommendedNumberOfPizzas", currentOrder.recommendedNumberOfPizzas());
     }
 
     private Pizza serializePizza(HttpServletRequest request, String pizzaNumber) {

@@ -216,7 +216,9 @@
         </form>
 
         <div class="row top-buffer">
-            <legend>Current voters</legend>
+            <legend>Current voters<br>
+                <small>Recommended number of pizzas: ${recommendedNumberOfPizzas}</small>
+            </legend>
             <div class="col-xs-12">
                 <c:forEach var="voter" items="${voters}">
                     ${voter}
