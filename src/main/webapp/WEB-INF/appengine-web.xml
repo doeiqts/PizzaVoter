@@ -3,4 +3,5 @@
   <application>third-fire-126004</application>
   <version>1</version>
   <threadsafe>false</threadsafe>
+  <runtime>java8</runtime>
 </appengine-web-app>

@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.32'
+        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.59'
     }
 }
 
@@ -12,25 +12,25 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'appengine'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.34'
+    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.59'
 
     providedCompile 'javax.servlet:servlet-api:2.5'
 
-    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.4'
+    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.59'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.4'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
 
     //com/google/appengine/api/datastore/AsyncDatastoreService
     //Caused by: java.lang.NoClassDefFoundError: com/google/appengine/api/datastore/AsyncDatastoreService
     //at com.googlecode.objectify.ObjectifyService.<clinit>(ObjectifyService.java:21)
-    compile 'com.google.appengine:appengine-endpoints:1.9.28' //add this line to avoid upper comment
+    compile 'com.google.appengine:appengine-endpoints:1.9.59' //add this line to avoid upper comment
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.google.guava:guava:19.0'//add this
     compile 'com.googlecode.objectify:objectify:5.1.12'  //works with ObjectifyFilter in web.xml
